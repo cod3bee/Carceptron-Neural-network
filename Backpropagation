@@ -1,0 +1,665 @@
+#include<stdio.h>
+#include<math.h>
+#include<stdlib.h>
+
+  double input[6][1728];  //output array of data normalisation 
+  double temp[6][1728], sum = 0 , output=0 ,x , val;
+  double rnd = 0.0;
+  double a1[10][80], outputofnetwork[6][6];
+ //float  data_set[6]={2,2,2,2,2,2} ;
+ 
+  double finalerror[6][1];  					//the sums of error calculated for the first  hidden layer
+  double erroroutputlayer[4][1] , errorhiddenlayer[6][4] ;  					//the error for output layer and hidden layer
+  double random[6][6], random1[6][4] , er=0 , err=0 ; 
+											//output values of nodes calculated using the feedforward and weights of the  neural network
+  double k1[6][6] , hdlyout[6][6] , w1[6][6] , err2=0; // storing weights n feedforward outputs of nodes(hdlout , w1) 
+  double updatedweight[6][4] , updatedweight1[6][6]; // array used for storing the updated weights in the hidden layer 
+  float l=0.1 ; // learning rate used for updating weight of the nodes in hidden network (for the we are assuming its value as 0.9)
+  double finalerror1[6][1];
+  double inputlayernodeval[6][1] , weight[6][6]; // values of nodes of inputlayer and weights of inputlayer n hiddenlayer 
+  char ch[1728] ,ch1[1728],ch2[1728],ch3[1728],ch4[1728],ch5[1728]; //
+  int hl=1 ,in=6 ,on=4 ,hn=6 , bias_in = 1;
+  
+ void file1();
+ void file2();
+ void file3();
+ void file4();
+ void file5();
+ void file6();
+ int hiddenlayer();
+ void buyingcost(char ch[]);
+ void maincost(char ch1[]);
+ void numofdoors(char ch2[]);
+ void numofpersons(char ch3[]);
+ void lugboot(char ch4[]);
+ void safety(char ch5[]);
+ int nodecompute();
+ int bp();
+ int bp1();
+ int updateweight();
+ int updateweight1();
+ void genrandom();
+ void genrandom1();
+ 
+ int main()
+ {
+ 	
+ 
+int n;
+	
+	printf("---------------------WELCOME TO THE WORLD OF NEURAL NETWORKS---------------------\n\n");
+	printf("Enter your option:-\n");	
+	printf("1. Normalise Data.\n");
+	printf("2. Train Data.\n");
+	printf("3. Test Data.\n");
+	
+	scanf("%d",&n);
+	
+	switch(n){
+		
+		case 1: {
+		//		file1(); // data normalisation
+        //    file2(); // data normalisation
+              //  file3(); // data normalisation
+               // file4(); // data normalisation
+               file5(); // data normalisation
+               // file6(); // data normalisation
+
+			break;
+		}
+		case 2:{
+			genrandom();
+			genrandom1();
+			nodecompute();        // node computing the feedforward value of the network
+            bp();                 //function for calculating error in first hidden layer and output layer
+	        //bp1();              //function for calculating error in all  other hidden layers
+	        updateweight();       // function used for updating the weights of hidden payer and output layer in the network
+	        updateweight1();   // function used for updating the weights of input layer and hidden layer in the network			
+		 break;
+		}
+		case3:{
+				nodecompute();
+			break;
+		}
+		
+		
+	}
+		 //hiddenlayer();  // calculating number of hidden layers
+		 
+	
+  
+         //file1(); // data normalisation
+         //file2(); // data normalisation
+         //file3(); // data normalisation
+         //file4(); // data normalisation
+         //file5(); // data normalisation
+         //file6(); // data normalisation
+         
+         //nodecompute(); // node computing the feedforward value of the network
+         //bp();  //function for calculating error in first hidden layer and output layer
+	     //bp1(); //function for calculating error in all  other hidden layers
+	     //updateweight(); // function used for updating the weights of hidden payer and output layer in the network
+	     //updateweight1();  // function used for updating the weights of input layer and hidden layer in the network
+	     return 0 ;
+}
+
+
+
+void genrandom()
+{ 
+int i,j;
+
+
+for(i=0;i<6;i++)
+	{
+	  for(j=0;j<6;j++)	
+	{
+	
+	rnd=(double)rand()/(double)RAND_MAX ;
+	random[i][j]=rnd;
+	//printf("\n%f", random[i][j]);
+	
+   }
+   }
+}
+
+void genrandom1()
+{ 
+int i,j;
+
+
+for(i=0;i<6;i++)
+	{
+	  for(j=0;j<4;j++)	
+	{
+	
+	rnd=(double)rand()/(double)RAND_MAX ;
+	random1[i][j]=rnd;
+	///printf("\n%f", random1[i][j]);
+	
+   }
+   }
+}
+
+
+void file1()
+{ int i;
+
+	 		FILE *fp;
+	fp = fopen("buying.txt" , "r");
+   if(fp==NULL)
+    {
+    printf("Error Reading File\n");
+    }
+    
+    
+	
+    for(i=0;i<1728;i++)
+    {
+    fscanf(fp,"%d\t",&ch[i]);
+    }
+    
+    for(i=0;i<1728;i++)
+   {
+ 
+     printf( " \n Value of buying cost is : %d", ch[i]);
+    } 
+    
+    
+    buyingcost(ch);   //data normalisation
+      
+	fclose(fp);
+	 
+	 
+
+		 //buyingcost();   //data normalisation
+}
+
+void file2()
+{
+
+		 FILE *fp1;
+	int i;
+
+	 		
+	fp1= fopen("maint.txt" , "r");
+   if(fp1==NULL)
+    {
+    printf("Error Reading File\n");
+    }
+    
+    
+	
+    for(i=0;i<1728;i++)
+    {
+    fscanf(fp1,"%d\t",&ch1[i]);
+    }
+    
+    for(i=0;i<1728;i++)
+   {
+ 
+     printf( " \n Value of maintainance cost is : %d", ch1[i]);
+    } 
+    
+     	 maincost(ch1);
+        fclose(fp1);
+		 //maincost();     //data normalisation
+}
+
+void file3()
+{
+    int i;
+		 FILE *fp2;
+	
+	
+	 fp2= fopen("numberdoors.txt" , "r");
+    
+   if(fp2==NULL)
+    {
+    printf("Error Reading File\n");
+    }
+    
+    
+	
+    for(i=0;i<1728;i++)
+    {
+    fscanf(fp2,"%d\t",&ch2[i]);
+    }
+    
+    for(i=0;i<1728;i++)
+   {
+ 
+     printf( " \n Value of number of doors is : %d", ch2[i]);
+    } 
+    
+     	 
+	  	 numofdoors(ch2);
+		 fclose(fp2);
+		 
+         //numofdoors();   //data normalisation
+}
+
+void file4()
+{
+int i;
+         FILE *fp3;
+	
+	
+	 fp3= fopen("numofperson.txt" , "r");
+	 
+    
+   if(fp3==NULL)
+    {
+    printf("Error Reading File\n");
+    }
+    
+    for(i=0;i<1728;i++)
+    {
+    fscanf(fp3,"%d\t",&ch3[i]);
+    }
+    
+    for(i=0;i<1728;i++)
+   {
+ 
+     printf( " \n Value of number of person is : %d", ch3[i]);
+    } 
+    
+     	 
+	  	 
+	  	 numofpersons(ch3);
+	  	 fclose(fp3);
+	  	 
+         //numofpersons();  //data normalisation
+}
+
+void file5()
+{
+ 
+int i;
+         FILE *fp4;
+	
+	 fp4= fopen("luggage.txt" , "r");
+      	
+   if(fp4==NULL)
+    {
+    printf("Error Reading File\n");
+    }
+    
+    for(i=0;i<1728;i++)
+    {
+    fscanf(fp4,"%d\t",&ch4[i]);
+    }
+    
+    for(i=0;i<1728;i++)
+   {
+ 
+     printf( " \n Value of luggage is : %d", ch4[i]);
+    } 
+
+		   lugboot(ch4);
+		   fclose(fp4);
+		   
+         //lugboot();      //data normalisation
+}
+
+void file6()
+{ int i ;
+
+         FILE *fp5;
+	 
+	 fp5= fopen("safety.txt" , "r");
+     
+   if(fp5==NULL)
+    {
+    printf("Error Reading File\n");
+    }
+    
+    for(i=0;i<1728;i++)
+    {
+    fscanf(fp5,"%d\t",&ch5[i]);
+    }
+    
+    for(i=0;i<1728;i++)
+   {
+ 
+     printf( " \n Value of safety is : %d", ch5[i]);
+    } 
+
+	   safety(ch5);
+	   fclose(fp5);
+
+        //safety();       //data normalisation
+ 
+}
+
+int hiddenlayer( )
+ { 
+  	float h , calc ;
+	int input=6 , output=4 , data=500 , alpha ;
+	printf("\n\n\nEnter the value of alpha ");
+	scanf("%d" ,&alpha );
+ 	{
+		calc=(alpha*(output+input));
+				
+							 		 
+                    h = data / calc ;
+                    printf("\n\n\nNumber of maximun hidden layer are %f ",h);
+
+    }
+
+ }
+ 
+
+ void buyingcost(char ch[1728])
+ {
+ 	int i, xmax=4 , xmin=1 ;
+	float n=0.0;
+	
+	for(i=0;i<1728;i++)
+	{
+	
+		n= (float)(ch[i]-xmin )/( xmax - xmin );
+		input[1][i]=n;
+		//printf("\nNormalized data for input 1 is %f" , input[1][i]);
+		}
+		//return 0;
+    
+ }
+ 
+ 
+ void maincost( char ch1[1728])
+{
+	float n1=0.0;
+	int i, xmax=4 , xmin=1 ;
+	for(i=0;i<1728;i++)
+	{
+		n1= (float)(ch1[i]-xmin )/( xmax - xmin );
+		input[2][i]=n1;
+		printf("\nNormalized data for input 2 is %f" , input[2][i]);
+    }
+	 //return 0;	
+	
+		
+}
+
+void numofdoors( char ch2[1728])
+{
+	float n2=0.0;
+	int  i, xmax=4 , xmin=1 ;
+	for(i=0;i<1728;i++)
+	{
+		n2= (float)(ch2[i]-xmin )/( xmax - xmin );
+		input[3][i]=n2;
+		printf("\nNormalized data for input 3 is %f" , input[3][i]);
+	}
+	//return 0;	
+}
+
+void numofpersons( char ch3[1728])
+{
+	float n3=0.0;
+	int i, xmax=4 , xmin=1 ;
+	for(i=0;i<1728;i++)
+	{
+		n3= (float)(ch3[i]-xmin )/( xmax - xmin );
+		input[4][i]=n3;
+		printf("\nNormalized data for input 4 is %f" , input[4][1]);
+		
+	}
+	//	return 0;
+}
+
+void lugboot( char ch4[1728])
+{   float n4=0.0;
+	int i,  xmax=3 , xmin=1 ;
+	for(i=0;i<1728;i++)
+	{
+		n4= (float)(ch4[i]-xmin )/( xmax - xmin );
+		input[5][i]=n4;
+		printf("\nNormalized data for input 5 is %f" , input[5][i]);
+    
+	}
+	//	 return 0 ;
+	
+		
+}
+
+void safety( char ch5[1728])
+{
+	float n5=0.0;
+	int i, xmax=3 , xmin=1 ;
+	for(i=0;i<1728;i++)
+	{
+		n5=(float)(ch5[i]-xmin )/( xmax - xmin );
+		input[6][i]=n5;
+		printf("\nNormalized data for input 6 is %f" , input[6][i]);
+		
+	
+	}
+	//return 0;
+		
+}
+
+
+int nodecompute()
+{
+   int c ,i ,hl=1 ,in=6 ,hm ,a, j , k ,on=4 ,l ,hn=6 , bias_in = 1;
+   
+   
+    for(k = 0;k<6;k++){
+   		for(l = 0;l<1;l++){
+   		
+   			temp[k][1] = input[k][1];
+   			
+		}
+		
+   }
+
+   printf("\n\n------------------------FEED FORWARD-----------------------------\n");
+
+   
+   printf("\n\n Number of hidden layers: %d ",hl);                          
+   //scanf("%d",&hl);
+   
+   printf("\n Number of nodes in input layer: %d ",in);
+   //scanf("%d",&in);
+   
+   printf("\n Number of nodes in hidden layer: %d" ,hn);                          
+   //scanf("%d",&hn);
+   
+   printf("\n Number of nodes in output layer: %d" , on);                          
+   //scanf("%d",&on);
+   
+         		   		
+   for(a = 0 ; a<=hl ; a++)
+   	{
+   		
+         /*Calculate weights from each node to next hidden layer!!  */
+         
+
+   		for(i=0;i<=in;i++)                                     /*For 6 input nodes*/
+   		{
+   		
+   			val = input[i][0];
+   			
+  	  		if(i == in){                                       /*For calculating bias*/
+  	  			val = bias_in;
+				}
+   			
+	    	for(c=0 ;c<hn;c++)                                          /*for 6 random weights generated from each node.*/
+  	  		{  
+  	  			
+   				//rnd=(double)rand()/(double)RAND_MAX ;
+      
+      			if(i==hl){
+      				
+					random1[c][i]=rnd;
+				}
+				else{
+		   			random[c][i]=rnd;
+	   			}
+  				a1[c][i]= val*rnd;
+  				//printf("Layer %d , Node %d = %f\n",a+1,c,a1[c][i]);
+  			
+   			}	
+   	
+		}
+		
+		
+		/* Calculating value of node!!*/
+		
+		printf("\n Layer %d\n",a+1);
+		
+		
+		for(i=0;i<hn;i++){
+			
+			for(c=0;c<=in;c++){
+				sum = sum + a1[i][c];
+			}
+
+			output=1/(1+pow(2.71,(-1)*sum));
+			outputofnetwork[i][hl]=output;
+			
+    		printf("Node %d = %f\n",i,outputofnetwork[i][hl]);
+		
+	   }
+	   	if((a+1)==hl){	
+			hn=on;
+	   	}
+		
+	}
+	
+	}
+
+int bp()
+{
+	
+	printf("\n\n-----------------------------BACKPROPOGATION--------------------------------\n");
+	
+	int i , j ;
+	float sum=0;
+	
+	
+ 	 printf("\nCalculating Error at nodes of output layer\n");
+ 	 
+ 	for (i=0 ; i<4 ; i++)                                                             
+ 	 {
+ 	 	er=(float)outputofnetwork[i][1]*(1-outputofnetwork[i][1])*(1-outputofnetwork[i][1]);
+ 	 	erroroutputlayer[i][0]=er;
+ 	 	printf("\n Error at node %d of output layer is %f " ,i+1, erroroutputlayer[i][0] );
+	  }
+	  
+	  
+	  printf(" \n\n Calculating Error at nodes of hidden layer\n");
+	  
+	  
+	 for (i=0 ; i<4 ; i++)
+	  {
+	  	
+       	//for (j=0 ; j<6; j++)
+	    
+		{
+          
+	  	 err=(float) outputofnetwork[i][0]*(1-outputofnetwork[i][0])*erroroutputlayer[i][0]*random1[1][i];
+	  	 errorhiddenlayer[i][0]=err;
+	  //	 printf("\n Error at node %d of hiddden layer is %f " ,i, errorhiddenlayer[i][0] );
+	  	 
+	    }
+ 
+    
+    }
+ 
+// sum of errors  is calculated  for nodes of hidden layer 
+
+	for (i=0 ; i<6 ; i++)
+    {
+   	//	for(j=0;j<4;j++)
+			{
+    			sum = sum+errorhiddenlayer[i][0];
+    			finalerror[i][1]=sum;
+    			}
+		printf(" \nError at node %d of hiddden layer is %f " ,i, finalerror[i][1] );
+	} 	
+	 	    
+    } 
+
+
+int bp1()
+{
+	printf(" \n\n Calculating Error at nodes of  second hidden layer in hidden network \n");
+	
+	 int i ,j ,k;
+	 
+	
+	
+	for (i=0 ; i<6 ; i++)
+	  {
+       	  
+	   for (k=0 ; k<6 ; k++)
+	      
+	   {
+	 	 err2 = hdlyout[i][k]*(1-hdlyout[i][k]) * (finalerror[i][1])* (w1[i][k]) ;
+	  	 
+	  	 k1[i][j] = err2 ;
+		 // array storing the error calculated in hidden layer
+	  	 printf("\n Error at nodes of hidden layer is %f " , k1[i][k] );
+	  	 
+	    }
+	  	
+	  }
+	  
+	  
+	  for (i=0 ; i<6 ; i++)
+    {
+    	    		
+    	finalerror1[i][1]= k1[i][0]+k1[i][1]+k1[i][2]+k1[i][3];
+    	printf("\n Error at node %d of hiddden layer layer is %f " ,i, finalerror1[i][1] );
+		
+	}
+}
+
+
+int updateweight()
+{  int i , j ;
+   float weight=0;
+
+	printf("  \n \n Updating the weights of  hidden and output layer in the neural  network \n ");
+	
+	for (i=0 ; i<6 ; i++)
+	  {
+	  	
+       	for (j=0 ; j<4; j++)       
+		{
+		                          
+	    	weight = (float)((random1[i][j])+(l * erroroutputlayer[i][0] * outputofnetwork[i][1]));  //updating weights
+	    	//printf("\n Updated weight of node  is %f " , weight );
+			updatedweight[i][j]=weight;
+	    	printf("\n Updated weight of node  is %f " , updatedweight[i][j] );
+	
+        }
+   }
+
+} 
+
+
+int updateweight1()
+{  int i , j ;
+   float weight1=0;
+    
+	printf("  \n \n Updating the weights of input and hidden layer of the neural  network  \n");
+	
+	for (i=0 ; i<6 ; i++)
+	  {
+	  	
+       	for (j=0 ; j<6; j++)       
+		{
+		                          
+	    	weight1 = (float)((random[i][j])+(l * finalerror1[i][1] * outputofnetwork[i][0]));  //updating weights
+	    	//printf("\n Updated weight of node is %f " , weight1 );
+			updatedweight1[i][j]=weight1;
+	    	printf("\n Updated weight of node  is %f " , updatedweight1[i][j] );
+	
+        }
+   }
+
+}
